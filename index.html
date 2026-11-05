@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RenCorner Mod Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Chakra+Petch:wght@600;700&display=swap">
+<style>
+/* Layout: single working column; ask box first, setup checklist, then a filterable command table */
+:root{
+  --bg:#f3f5f4; --panel:#ffffff; --fg:#17201d; --muted:#5b6964; --line:#d7dfdb;
+  --accent:#0f7a5c; --accent-ink:#ffffff; --warn:#b3261e; --warn-bg:#fbe9e7; --chip:#e6eeea;
+  --f-display:"Chakra Petch",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1513; --panel:#161f1c; --fg:#e3ebe7; --muted:#93a39d; --line:#26332e;
+  --accent:#3fbf93; --accent-ink:#06120d; --warn:#ff8a80; --warn-bg:#2c1714; --chip:#1e2a26; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1513; --panel:#161f1c; --fg:#e3ebe7; --muted:#93a39d; --line:#26332e;
+  --accent:#3fbf93; --accent-ink:#06120d; --warn:#ff8a80; --warn-bg:#2c1714; --chip:#1e2a26; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:920px;margin:0 auto;display:grid;gap:28px}
+header h1{font:700 2rem/1.1 var(--f-display);letter-spacing:.01em;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:65ch}
+.net{font-family:var(--f-mono);font-size:.82rem;color:var(--accent)}
+h2{font:600 1.15rem/1.2 var(--f-display);letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--chip);padding:1px 6px;border-radius:4px;white-space:nowrap}
+/* ask */
+.ask form{display:flex;gap:8px;flex-wrap:wrap}
+.ask input{flex:1 1 260px;min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+button{font:500 .95rem var(--f-body);padding:10px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.examples button{background:var(--chip);color:var(--fg);border-color:var(--line);font-size:.85rem;padding:6px 10px}
+.log{display:grid;gap:12px;margin-top:16px}
+.msg{padding:12px 14px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere;min-width:0}
+.msg.u{background:var(--chip);justify-self:end;max-width:85%}
+.msg.a{border:1px solid var(--line);font-size:.95rem}
+.msg.a code{white-space:pre-wrap}
+.note{color:var(--muted);font-size:.85rem;margin-top:8px}
+/* steps */
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:10px}
+ol.steps li{padding-left:4px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:12px}
+.sc{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.sc div{color:var(--muted);font-size:.88rem}
+/* table */
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tools input{flex:1 1 220px;min-width:0;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.seg button{background:transparent;color:var(--fg);border-color:var(--line);padding:8px 12px;font-size:.88rem}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .75rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td.cmd{font-family:var(--f-mono);white-space:nowrap}
+.bot{font:500 .72rem var(--f-mono);padding:2px 6px;border-radius:4px;background:var(--chip);white-space:nowrap}
+.risk{font:600 .7rem var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--warn);background:var(--warn-bg);padding:2px 6px;border-radius:4px;margin-left:6px;white-space:nowrap}
+.guess{color:var(--muted);font-style:italic}
+.count{color:var(--muted);font-size:.85rem;margin-top:8px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="net">irc.rencorner.co · vmann259</div>
+    <h1>RenCorner Mod Kit</h1>
+    <p>Set up mIRC on a new PC, find the right bot command, and look up what each one does. Commands go in <code>#rc-aow-admin</code> unless noted.</p>
+  </header>
+
+  <section class="ask" aria-labelledby="ask-h">
+    <h2 id="ask-h">Ask for a command</h2>
+    <form id="askForm">
+      <input id="askInput" autocomplete="off" placeholder="e.g. how do I check if two players are the same person?">
+      <button id="askBtn" type="submit">Ask</button>
+      <button id="stopBtn" type="button" class="ghost" hidden>Stop</button>
+    </form>
+    <div class="examples" id="examples">
+      <button type="button">Delete a player's registration</button>
+      <button type="button">Is BROLY the same person as imgreenranger?</button>
+      <button type="button">Mute someone for a bit</button>
+      <button type="button">The AOW server is down, what do I do?</button>
+    </div>
+    <div class="log" id="log" aria-live="polite"></div>
+    <p class="note" id="askNote" data-pages="1">Answers come from the command lists below. Descriptions marked "likely" are inferred from the command name, so confirm with <code>!help &lt;command&gt;</code> first.</p>
+  </section>
+
+  <section aria-labelledby="setup-h">
+    <h2 id="setup-h">New PC setup</h2>
+    <ol class="steps">
+      <li>Download <a href="https://github.com/vmannusa/rencorner-mod-kit/raw/main/install-rencorner-mirc.ps1">install-rencorner-mirc.ps1</a> and <a href="https://github.com/vmannusa/rencorner-mod-kit/raw/main/rencorner.mrc">rencorner.mrc</a> into the same folder.</li>
+      <li>Right-click <span class="mono">install-rencorner-mirc.ps1</span> and choose <b>Run with PowerShell</b>. It installs official mIRC (winget), copies the script into <span class="mono">%APPDATA%\mIRC</span>, and registers it to load automatically.</li>
+      <li>mIRC opens and asks once for your NickServ password and the mod channel key. Both are stored only in mIRC's local variables file on that PC.</li>
+      <li>It connects to <code>irc.rencorner.co</code>, identifies, waits 5 seconds, then joins #rc-mods, #rc-aow-admin, #rc-comm-admin, #rc-snipe-admin (using that key) and #rc-aow, #rc-comm, #rc-snipe.</li>
+      <li>Check: ChanServ should give you <code>+o</code> in #rc-mods. If a channel fails, look in Status for <code>(+k)</code> wrong key, <code>(+i)</code> invite only, or <code>(+R)</code> not identified.</li>
+    </ol>
+    <p class="note">Manual fallback: Tools › Options › Servers › Add <code>irc.rencorner.co</code>, then type <code>/load -rs rencorner.mrc</code>.</p>
+    <div class="grid2">
+      <div class="sc"><code>/rccompare A B</code><div>HW hash, serial and IP for two names. Same HW or serial means almost certainly the same person.</div></div>
+      <div class="sc"><code>/rcdelreg name</code><div>Runs <code>!delreg name</code> in #rc-aow-admin.</div></div>
+      <div class="sc"><code>/rccheck name</code><div>HW hash, serial and IP for one player.</div></div>
+      <div class="sc"><code>/rchelp cmd</code><div>Shows RCAOW's own syntax for a command.</div></div>
+      <div class="sc"><code>/rc.join</code><div>Rejoin all channels now.</div></div>
+      <div class="sc"><code>/rc.setup</code><div>Change the saved NickServ password.</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ref-h">
+    <h2 id="ref-h">Command reference</h2>
+    <div class="tools">
+      <input id="filter" placeholder="Filter commands, e.g. ban, reg, hw" autocomplete="off">
+      <div class="seg" role="group" aria-label="Bot">
+        <button type="button" data-bot="all" aria-pressed="true">All</button>
+        <button type="button" data-bot="RCAOW" aria-pressed="false">RCAOW</button>
+        <button type="button" data-bot="RCBOT" aria-pressed="false">RCBOT</button>
+      </div>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Command</th><th>Bot</th><th>What it does</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p class="count" id="count"></p>
+    <p class="note">RCAOW is the AOW game-server bot ([BR] BRenBot) and lists these as available to vmann259@IRC. RCBOT runs server and service controls; its descriptions are from its own <code>!help</code>. Typing <code>!help</code> makes both bots answer, so RCBOT's long text can bury RCAOW's list. Use <code>!help &lt;command&gt;</code> instead.</p>
+  </section>
+</div>
+
+<script>
+// d = description, g = inferred from name ("likely"), r = risky / admin-only
+const RCAOW = {
+"!about":["Bot version and info"],"!addblockrtc":["Block a player's radio commands",1],"!addjail":["Add a player to the jail list",1],"!addmute":["Add a permanent mute",1],"!allow":["Allow something blocked for a player",1],"!amsg":["Send an admin message in-game",1],"!atm":["Admin team message",1],"!auth":["Authenticate a protected nick in-game",1],"!autoannounce":["Manage automatic announcements",1],"!autokb":["Add an auto kick/ban rule",1],"!autokb_list":["List auto kick/ban rules",1],
+"!ban":["Ban a player"],"!banhw":["Ban by hardware ID"],"!banip":["Ban by IP"],"!banlistfds":["List bans on the FDS",1],"!banlog":["Show recent bans"],"!banserial":["Ban by game serial"],"!block":["Block a player from something",1],"!blockrtc":["Block radio commands",1],"!blockrtcall":["Block radio commands for everyone",1],"!blockrtcinfo":["Radio-block info",1],"!blockrtclist":["List radio blocks",1],"!bmute":["Mute (variant)",1],"!buildings":["Building health status"],"!c4mute":["Stop a player placing C4",1],"!cmsg":["Coloured message in-game",1],"!cmsgp":["Coloured private message",1],"!cmsgt":["Coloured team message",1],"!commander":["Commander info / set commander",1],"!custom_commands":["List custom commands"],
+"!delautokb":["Remove an auto kick/ban rule",1],"!delban":["Remove a ban"],"!delbanfds":["Remove a ban on the FDS",1],"!delblockrtc":["Remove a radio block",1],"!deljail":["Remove from jail list",1],"!delmute":["Remove a permanent mute"],"!delrank":["Delete a player's rank stats",1],"!delreg":["Delete a player's registration (lets them re-register / get back in)"],"!deltime":["Delete a player's play-time record",1],"!delwarn":["Remove a warning"],
+"!disarm":["Remove a player's C4 and beacons"],"!disarmb":["Remove a player's beacons",1],"!disarmp":["Remove a player's proximity mines",1],"!donators":["List donators"],"!dtm":["Unknown, check !help",1],"!dumplogs":["Dump server logs",1],"!eject":["Eject a player from a vehicle",1],"!fds":["Send a raw console command to the game server",0,1],"!forcenetcheck":["Force a connection check on a player",1],"!freeze":["Freeze a player",1],"!friendlyfire":["Show or toggle friendly fire",1],"!ftc":["Force team change",1],"!ftc2":["Force team change (variant)",1],"!ftc3":["Force team change (variant)",1],"!ftc4":["Force team change (variant)",1],"!funwar":["Fun-war mode",1],
+"!gameinfo":["Current map, time, score"],"!gameover":["End the current game",0,1],"!getbw":["Show a player's bandwidth"],"!gethost":["Show a player's host",1],"!givepoints":["Give points to a player",1],"!givepow":["Give a power-up / weapon",1],"!hostban":["Ban by host",1],"!hostbanlist":["List host bans",1],"!hostlookup":["Look up a host",1],"!hostmsg":["Message as the host"],"!hwbanforced":["Force a hardware ban",1],"!hwbanlist":["List hardware bans"],"!hwhash":["Show a player's hardware ID hash"],"!hwnick":["List every nick seen on a hardware hash"],"!hwrefresh":["Refresh hardware ID data",1],
+"!ids":["Player ID list"],"!ipinfo":["Show a player's IP / location"],"!iplookup":["Look up an IP"],"!jail":["Jail a player"],"!jailinfo":["Jail details for a player",1],"!jaillist":["List jailed players"],"!joinsound":["Join sound settings",1],"!kick":["Kick a player"],"!kicklog":["Show recent kicks"],"!kill":["Kill a player in-game"],"!killharv":["Destroy a team's harvester",0,1],"!killsound":["Kill sound settings",1],"!leavesound":["Leave sound settings",1],"!lips":["Unknown, check !help",1],"!listreg":["List / look up registrations"],"!lns":["Unknown, check !help",1],"!logsearch":["Search logs for a name or text"],"!maplist":["Map list"],"!massdisarmb":["Remove all beacons",1],
+"!mdelrank":["Delete rank (variant)",1],"!modlist":["List moderators"],"!modules":["List bot modules"],"!mrank":["Rank (variant)",1],"!mrankallow":["Rank allow (variant)",1],"!mrankignore":["Rank ignore (variant)",1],"!mrankstats":["Rank stats (variant)",1],"!mtop":["Top list (variant)",1],"!murder":["Kill a player (variant)",1],"!mute":["Mute a player"],"!muteinfo":["Mute details",1],"!mutelist":["List mutes"],"!netcheck":["Connection check on a player",1],"!netwhitelist":["Show net-check whitelist",1],"!netwhitelistadd":["Add to net-check whitelist",1],"!netwhitelistremove":["Remove from net-check whitelist",1],"!nextmap":["Show the next map"],
+"!page":["Page (private message) a player in-game"],"!pagemods":["Page all mods"],"!pamsg":["Private admin message",1],"!pb":["Unknown, check !help",1],"!pedestals":["Pedestal status",1],"!pinfo":["Player info"],"!ping":["Player pings"],"!playerinfo":["Detailed player info"],"!players":["List players in-game"],"!plimit":["Show / set player limit",1],"!plugins":["List loaded plugins (check 'unregistered' for registrations)"],"!postmsg":["Post a message",1],"!ppage":["Private page",1],"!psound":["Play a sound to a player",1],
+"!qkick":["Quick kick",1],"!ragequit":["Fun command",1],"!rank":["Show a player's rank"],"!rankallow":["Allow a player in ranks",1],"!rankignore":["Exclude a player from ranks",1],"!rankstats":["Rank statistics",1],"!rebuild":["Rebuild a building",0,1],"!recallow":["Allow recommendations",1],"!recignore":["Ignore recommendations",1],"!refund":["Refund a player's credits",1],"!rehash":["Reload bot config",0,1],"!reloadclient":["Reload client data",1],"!reloadlevel":["Restart the current map",0,1],"!rotation":["Map rotation"],"!rotationfull":["Full map rotation"],"!rules":["Show the rules"],
+"!screenshot":["Request a screenshot from a player (results post via DSCBot)"],"!scripts":["Loaded scripts"],"!seen":["When a player was last seen"],"!serialbanforced":["Force a serial ban",1],"!serialbanlist":["List serial bans"],"!serialhash":["Show a player's game serial hash"],"!serialnick":["List every nick seen on a serial"],"!set":["Change a server setting",0,1],"!setbw":["Set a player's bandwidth",1],"!settime":["Set game time left",1],"!show_warnings":["Show a player's warnings"],"!show_warnings_all":["Show all warnings"],"!showmods":["Mods currently in-game"],"!showmsgs":["Show messages",1],"!shown00bs":["Fun command",1],"!shun":["Shun a player",1],"!skick":["Silent kick",1],"!snda":["Play sound to all",1],"!sndp":["Play sound to player",1],"!sndt":["Play sound to team",1],"!snm":["Unknown, check !help",1],"!spectate":["Spectate mode",1],"!stats":["Player stats"],
+"!survey":["Run a survey / vote",1],"!swapteams":["Swap the teams",0,1],"!takepoints":["Take points from a player",1],"!tbot":["Add a timed bot message",1],"!tbotdel":["Delete a timed message",1],"!tbotlist":["List timed messages",1],"!teamplayers":["Players per team"],"!tempmute":["Temporary mute"],"!tempunmute":["Remove a temporary mute"],"!timegame":["Game time info",1],"!top":["Top players"],"!totalips":["Count of IPs",1],"!tpage":["Team page",1],"!unblock":["Undo !block",1],"!unblockrtc":["Undo radio block",1],"!unblockrtcall":["Undo radio block for all",1],"!unfreeze":["Unfreeze a player"],"!unjail":["Release from jail"],"!unmute":["Unmute a player"],"!unrefund":["Undo a refund",1],"!unshun":["Undo shun",1],"!updatesounds":["Reload sounds",1],"!vehicles":["Vehicle list",1],"!version":["Bot version"],"!vip":["VIP info / add VIP",1],"!warn":["Warn a player"],"!warning_stats":["Warning statistics",1],"!warnings":["A player's warnings"],"!whoisip":["Who is on an IP"],"!winvite":["Unknown, check !help",1],"!wpage":["Unknown, check !help",1]
+};
+const RCBOT = [
+["!startfds / !stopfds","Turn the game server (FDS) on/off. In #rc-aow-admin or #rc-snipe-admin via the shortcut script.",1],
+["!startbot / !stopbot","Turn the game bot on/off",1],["!startbiapp / !stopbiapp","Turn BiAppManager on/off",1],
+["!hop","Op RCBot (or in PM if you have access)"],
+["!addSDE / !delSDE / !viewSDE <HWhash>","Server-side damage extrapolation for a possible cheater"],
+["!addHWban / !delHWban / !viewHWban <HWhash>","Ban / unban / view a hardware ID"],
+["!addWhitelist / !delWhitelist / !viewWhitelist <IP>","Whitelist an IP; !load_Whitelist / !unload_Whitelist loads the script"],
+["!startts / !stopts","Start/stop TeamSpeak",1],["!startWireshark / !stopWireshark / !TimerWireshark","Capture traffic during a DDoS",1],
+["!add-donator / !del-donator / !view-donator <nick>","Manage donators for the Boinkmad scripts"],
+["!startApache","Restart the Apache web server for redirects",1],["!stopautoteam","Turn off the autoteams timer",1],
+["!startxProxy / !stopxProxy","Admin only. Turn xProxy on/off",1],["!startServerWatch","Admin only. ServerWatch for xProxy",1],
+["!startALL / !stopALL","Admin only. Turn EVERYTHING on/off",1],["!startirc","Admin only. Restart the Windows IRC on the Marathon box",1],
+["!rdpMara / !rdpArk","Admin only. Restart Remote Desktop on a server PC",1],["!startsudppipe / !stopsudppipe","Admin only. Proxy port 5001 to 5000 for Marathon",1],
+["!starttaskmanager","Restart Task Manager",1],
+["!load_nickserv / !unload_nickserv","Use when NickServ is down so people keep +v; unload when it's back"],
+["!Forwarder RC|MPF on|off / !Forwarder status","Send players to the backup server",1],
+["!startWolfRegMarathon (!startWolf) / !stopWolf","Start/stop the WolfRegMarathon Discord bot",1],
+["!load unregistered / !unload unregistered","Turn the in-game registration system on/off (check with !plugins)",1],
+["!load_/!unload_ seifmagdi, Muslium, IPban-Bucky","Reload specific ban scripts if they misbehave"],
+["!addbanip / !delbanip <123.123.>","IP range ban / unban. !viewbanip lists ranges, !viewvpnbans shows who's kicked"],
+["!startDiscordBot (!startDBO) / !stopDBO","Turn the Discord bot on/off",1],
+["!load_shortcut-snipe / -mara","Load the !startfds shortcut in #rc-snipe-admin / #rc-aow-admin"],
+["!start/restart/stop-Starbound(IRC)","Starbound server and IRC bot (RCBOT1)",1],
+["!start/restart/stop-terraria1|2","Terraria servers (RCBOT1). Terraria bans run in #rc-terraria-admin",1],
+["!infchests3-s1","Reset Terraria S1 InfChests3 DB after a crash. Run ONCE only",1]
+];
+const DATA = [
+  ...Object.entries(RCAOW).map(([c,[d,g,r]])=>({c,bot:"RCAOW",d,g:!!g,r:!!r})),
+  ...RCBOT.map(([c,d,r])=>({c,bot:"RCBOT",d,g:false,r:!!r}))
+];
+
+const rows=document.getElementById("rows"),filter=document.getElementById("filter"),count=document.getElementById("count");
+let bot="all";
+function render(){
+  const q=filter.value.trim().toLowerCase();
+  const list=DATA.filter(x=>(bot==="all"||x.bot===bot)&&(!q||(x.c+" "+x.d).toLowerCase().includes(q)));
+  rows.replaceChildren(...list.map(x=>{
+    const tr=document.createElement("tr");
+    const a=document.createElement("td");a.className="cmd";a.textContent=x.c;
+    const b=document.createElement("td");const s=document.createElement("span");s.className="bot";s.textContent=x.bot;b.append(s);
+    const c=document.createElement("td");const t=document.createElement("span");t.textContent=x.d;if(x.g)t.className="guess";c.append(t);
+    if(x.g){const g=document.createElement("span");g.className="guess";g.textContent=" (likely)";c.append(g)}
+    if(x.r){const r=document.createElement("span");r.className="risk";r.textContent="Careful";c.append(r)}
+    tr.append(a,b,c);return tr;
+  }));
+  count.textContent=list.length+" of "+DATA.length+" commands";
+}
+filter.addEventListener("input",render);
+document.querySelectorAll(".seg button").forEach(btn=>btn.addEventListener("click",()=>{
+  bot=btn.dataset.bot;document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));render();
+}));
+render();
+
+// ---- Ask (Claude via sample capability) ----
+const RULES=`You help a RenCorner IRC moderator (nick vmann259) pick the right bot command. Answer in 1-6 short lines: the exact command(s) to type, in a line by itself each, and which channel to type it in. Keep it practical.
+Facts:
+- Network irc.rencorner.co. RCAOW is the AOW/Marathon game-server bot (BRenBot); its commands are typed in #rc-aow-admin. RCBOT controls servers/services. #rc-mods only relays bot output; don't type game commands there.
+- Typing !help makes both bots answer; suggest "!help <command>" to see exact syntax.
+- To tell if two names are the same person: !hwhash and !serialhash on both (match = almost certainly same), !hwnick <hash> / !serialnick <serial> list all nicks; !ipinfo is weak evidence only. mIRC shortcut: /rccompare name1 name2.
+- mIRC shortcuts from his script: /rcdelreg name, /rclistreg name, /rccheck name, /rchelp cmd, /rc.join, /rc.setup.
+- Only use commands from the lists below. Never invent one. If a description is marked (likely), say to confirm with !help first.
+- If a command is marked CAREFUL or Admin only (restarts or stops servers, ends games, affects everyone), warn clearly and suggest checking with an admin first.
+- If nothing fits, say so and suggest !help or asking in #rc-mods.
+- Never ask for or repeat passwords. Plain text, no markdown headings.
+Commands:
+`+DATA.map(x=>`${x.c} [${x.bot}] ${x.d}${x.g?" (likely)":""}${x.r?" CAREFUL":""}`).join("\n");
+
+const form=document.getElementById("askForm"),input=document.getElementById("askInput"),askBtn=document.getElementById("askBtn"),stopBtn=document.getElementById("stopBtn"),log=document.getElementById("log"),note=document.getElementById("askNote");
+let turns=[],ctl=null,samplePromise=window.claude?.use?window.claude.use("sample"):Promise.resolve(null);
+function bubble(cls,text){const d=document.createElement("div");d.className="msg "+cls;d.textContent=text;log.append(d);return d}
+const COPY={rate_limited:"Too many questions right now. Try again in a minute.",session_expired:"Sign in to Claude again to ask.",refused:"Claude couldn't answer that one. Try rewording it."};
+async function ask(q){
+  q=q.trim();if(!q||ctl)return;
+  const sample=await samplePromise;
+  if(!sample){input.value="";bubble("u",q);bubble("a",localAnswer(q));return}
+  input.value="";bubble("u",q);const out=bubble("a","Thinking...");
+  turns.push({role:"user",content:q});if(turns.length>12)turns=turns.slice(-12);
+  ctl=new AbortController();askBtn.disabled=true;stopBtn.hidden=false;
+  try{
+    const {text}=await sample([{role:"user",content:RULES},{role:"assistant",content:"Understood. What do you need to do?"},...turns],{cache:false,signal:ctl.signal,onText:({text})=>{out.textContent=text}});
+    turns.push({role:"assistant",content:text});
+  }catch(e){
+    turns.pop();
+    if(e.code==="not_granted"||e.code==="sampling_disabled"||e.code==="capability_disabled"||e.code==="not_declared"){out.remove();document.querySelector(".ask form").hidden=true;document.getElementById("examples").hidden=true;note.textContent="Asking Claude is turned off for this page. Use the filter below instead."}
+    else if(e.code==="cancelled"){out.textContent=e.text||"Stopped."}
+    else{out.textContent=(e.text?e.text+"\n\n":"")+(COPY[e.code]||"Something went wrong. Try asking again.")}
+  }finally{ctl=null;askBtn.disabled=false;stopBtn.hidden=true}
+}
+
+// ---- Built-in answers (work anywhere, no Claude needed) ----
+const A="In #rc-aow-admin:\n";
+const INTENTS=[
+ {k:["delreg","registration","register","reregister","re-register","unregister","delete reg","get back in","cant log","can't log","reg"],a:A+"!listreg NAME   (confirm the exact name)\n!delreg NAME\nShortcut in mIRC: /rcdelreg NAME\nSyntax check: !help delreg"},
+ {k:["same person","same player","alt","alias","smurf","same guy","same as","is also","multiaccount","multi account","compare"],a:A+"!hwhash NAME1\n!hwhash NAME2\n!serialhash NAME1\n!serialhash NAME2\nSame HW hash or serial = almost certainly the same person. !hwnick HASH or !serialnick SERIAL lists every nick on it. !ipinfo is weak evidence only.\nShortcut in mIRC: /rccompare NAME1 NAME2"},
+ {k:["unban","remove ban","lift ban","delban"],a:A+"!delban NAME\nHardware ban (RCBOT): !delHWban HWHASH\nIP range ban (RCBOT): !delbanip 123.123."},
+ {k:["hardware ban","hwban","ban hardware","ban hw"],a:A+"!hwhash NAME   (get the hash)\n!banhw NAME\nOr via RCBOT: !addHWban HWHASH  /  !viewHWban HWHASH"},
+ {k:["ip range","range ban","vpn","banip range"],a:"RCBOT:\n!addbanip 123.123.\n!delbanip 123.123.\n!viewbanip  /  !viewvpnbans"},
+ {k:["ban","cheater","cheating","hacker","hacking"],a:A+"!ban NAME\nStronger: !banhw NAME (hardware) or !banserial NAME\nSuspected cheater without banning (RCBOT): !addSDE HWHASH\nCheck history: !banlog"},
+ {k:["tempmute","temp mute","mute for","shut up","spamming","spam","mute"],a:A+"!tempmute NAME   (temporary)\n!mute NAME   (until removed)\n!unmute NAME  /  !tempunmute NAME\nList: !mutelist"},
+ {k:["unmute"],a:A+"!unmute NAME  or  !tempunmute NAME"},
+ {k:["kick","boot","remove player"],a:A+"!kick NAME\nRecent kicks: !kicklog"},
+ {k:["warn","warning"],a:A+"!warn NAME\n!warnings NAME   (see their warnings)\n!delwarn NAME"},
+ {k:["jail","unjail"],a:A+"!jail NAME  /  !unjail NAME\n!jaillist"},
+ {k:["screenshot","screen shot","ss"],a:A+"!screenshot NAME\nThe result posts back via DSCBot in #rc-mods."},
+ {k:["who is online","who's on","players","player list","online"],a:A+"!players\n!teamplayers  /  !showmods"},
+ {k:["player info","info on","ip of","location","whois"],a:A+"!playerinfo NAME  or  !pinfo NAME\n!ipinfo NAME\n!seen NAME   (last seen)"},
+ {k:["last seen","seen"],a:A+"!seen NAME"},
+ {k:["c4","beacon","disarm","mines"],a:A+"!disarm NAME   (C4 + beacons)\n!c4mute NAME   (likely: stops them placing C4 - check !help c4mute)"},
+ {k:["server down","down","crashed","offline","server crashed","crash","restart server","fds","server offline"],a:"CAREFUL - affects everyone. Check with an admin first.\nIn #rc-aow-admin (RCBOT shortcut): !stopfds then !startfds\nBot only: !stopbot / !startbot\nSend players to backup: !Forwarder RC on  (!Forwarder status to check)"},
+ {k:["ddos","attack","lag spike"],a:"CAREFUL. RCBOT:\n!startWireshark  (capture)  /  !stopWireshark\n!Forwarder RC on   (move players to backup server)"},
+ {k:["nickserv down","nickserv","voice","+v"],a:"RCBOT: !load_nickserv while NickServ is down (keeps people's +v)\n!unload_nickserv when it's back."},
+ {k:["whitelist"],a:"RCBOT:\n!addWhitelist 123.123.123.123\n!delWhitelist / !viewWhitelist IP"},
+ {k:["map","next map","rotation","change map"],a:A+"!nextmap  /  !rotation  /  !maplist\nRestart map (CAREFUL): !reloadlevel"},
+ {k:["score","game info","time left","status"],a:A+"!gameinfo\n!buildings   (building health)"},
+ {k:["message","announce","say in game","tell"],a:A+"!amsg TEXT   (admin message in-game, likely)\n!page NAME TEXT   (private page)\n!pagemods TEXT"},
+ {k:["donator","donor"],a:"RCBOT: !add-donator NICK / !del-donator NICK / !view-donator NICK\nRCAOW: !donators"},
+ {k:["discord"],a:"RCBOT: !startDiscordBot (!startDBO) / !stopDBO\nWolfRegMarathon bot: !startWolf / !stopWolf"},
+ {k:["teamspeak","ts"],a:"RCBOT (CAREFUL): !startts / !stopts"},
+ {k:["terraria"],a:"RCBOT1 (CAREFUL): !restart-terraria1 / !restart-terraria2\nTerraria bans go in #rc-terraria-admin."},
+ {k:["help","syntax","how do i use","what does"],a:"Type !help COMMAND in #rc-aow-admin for RCAOW's exact syntax.\nPlain !help makes both bots answer, so RCBOT's long text can bury RCAOW's list."}
+];
+const norm=t=>(" "+t.toLowerCase().replace(/[^a-z0-9!+' -]/g," ").replace(/\s+/g," ")+" ");
+function localAnswer(q){
+  const t=norm(q);let best=null,score=0;
+  for(const it of INTENTS){let sc=0;for(const k of it.k){if(t.includes(" "+k+" ")||(k.length>4&&t.includes(k)))sc+=k.length}
+    if(sc>score){score=sc;best=it}}
+  const direct=DATA.filter(x=>x.c.split(/[ \/]+/).some(w=>w.startsWith("!")&&t.includes(" "+w.toLowerCase()+" ")));
+  let out=best?best.a:"";
+  if(direct.length)out+=(out?"\n\n":"")+direct.slice(0,4).map(x=>x.c+"  ["+x.bot+"]  "+x.d+(x.g?" (likely)":"")+(x.r?"  CAREFUL":"")).join("\n");
+  if(!out){
+    const words=t.trim().split(" ").filter(w=>w.length>3);
+    const hits=DATA.map(x=>({x,n:words.filter(w=>(x.c+" "+x.d).toLowerCase().includes(w)).length})).filter(h=>h.n).sort((a,b)=>b.n-a.n).slice(0,5);
+    out=hits.length?"Closest matches:\n"+hits.map(({x})=>x.c+"  ["+x.bot+"]  "+x.d).join("\n")+"\n\nConfirm with !help COMMAND.":"No match. Try other words (ban, mute, reg, hwhash), use the filter below, or ask in #rc-mods.";
+  }
+  return out;
+}
+if(!window.claude){note.textContent="Answers come from the built-in command list. Confirm syntax with !help COMMAND before running anything marked CAREFUL.";}
+form.addEventListener("submit",e=>{e.preventDefault();ask(input.value)});
+stopBtn.addEventListener("click",()=>ctl?.abort());
+document.querySelectorAll("#examples button").forEach(b=>b.addEventListener("click",()=>ask(b.textContent)));
+</script>
+</body>
+</html>
